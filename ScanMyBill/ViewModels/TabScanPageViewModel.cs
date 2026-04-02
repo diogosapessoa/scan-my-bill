@@ -91,16 +91,18 @@ public partial class TabScanPageViewModel : ObservableObject
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task RecentSelectedItemAsync(History history)
+    private async Task RecentSelectedItemAsync()
     {
-        SelectedItem = null; //Tirar o indicador de seleção
+        var selectedItem = SelectedItem;
 
-        if (string.IsNullOrWhiteSpace(history?.Value)) return;
+        SelectedItem = null;
 
-        bool accept = await _alert.AcceptAsync("Copiar para área de transferência?", history.Value, "Sim", "Não");
+        if (string.IsNullOrWhiteSpace(selectedItem?.Value)) return;
+
+        bool accept = await _alert.AcceptAsync("Copiar para área de transferência?", selectedItem.Value, "Sim", "Não");
 
         if (accept)
-            await _clipboard.SetTextAsync(history.Value);
+            await _clipboard.SetTextAsync(selectedItem.Value);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]

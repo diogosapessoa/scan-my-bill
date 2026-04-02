@@ -11,7 +11,6 @@
         <converters:UtcToLocalConverter x:Key="UtcToLocalConverter" />
         <toolkit:BoolToObjectConverter x:Key="BoolFilterBackgroundToColor" x:TypeArguments="Color" TrueObject="{StaticResource SecondaryBlue}" FalseObject="#E2E8F0" />
         <toolkit:BoolToObjectConverter x:Key="BoolFilterTextToColor" x:TypeArguments="Color" TrueObject="#FFFFFF" FalseObject="#475569" />
-        <toolkit:ItemTappedEventArgsConverter x:Key="ItemTappedEventArgsConverter" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
@@ -20,7 +19,7 @@
         <VerticalStackLayout Grid.Row="0" Padding="24, 16, 24, 8" Spacing="20">
 
             <!-- Search Bar -->
-            <Frame BackgroundColor="#E2E8F0" CornerRadius="12" HasShadow="False" BorderColor="Transparent" Padding="12, 0">
+            <Border BackgroundColor="#E2E8F0" StrokeShape="RoundRectangle 12" Stroke="Transparent" StrokeThickness="0" Padding="12, 0">
                 <Grid ColumnDefinitions="Auto, *">
                     <Image Source="search_24dp.png" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" Margin="0,0,12,0" />
                     <Entry Grid.Column="1" ReturnType="Search" Placeholder="Nome do arquivo..." 
@@ -29,7 +28,7 @@
                            ReturnCommand="{Binding SearchEnterCommand}">
                     </Entry>
                 </Grid>
-            </Frame>
+            </Border>
         </VerticalStackLayout>
 
         <!-- Filters -->
@@ -38,7 +37,7 @@
                 <Button Text="Tudo" BackgroundColor="{Binding IsFilterAll, Converter={StaticResource BoolFilterBackgroundToColor}}"
                         TextColor="{Binding IsFilterAll, Converter={StaticResource BoolFilterTextToColor}}" 
                         Command="{Binding FilterAllSelectedCommand}"
-                        CornerRadius="20" HeightRequest="40" Padding="20,0" FontAttributes="Bold" />
+                        CornerRadius="20" HeightRequest="40" Padding="20,0" />
                 <Button Text="PDF" BackgroundColor="{Binding IsFilterPdf, Converter={StaticResource BoolFilterBackgroundToColor}}" 
                         TextColor="{Binding IsFilterPdf, Converter={StaticResource BoolFilterTextToColor}}" 
                         Command="{Binding FilterPdfSelectedCommand}"
@@ -53,34 +52,32 @@
         <!-- Content Area (Scrollable History) -->
         <ScrollView Grid.Row="3">
 
-            <ListView x:Name="HistoryList" HasUnevenRows="True" CachingStrategy="RetainElement" Margin="20" ItemsSource="{Binding HistoryItems}">
-                <ListView.Behaviors>
-                    <toolkit:EventToCommandBehavior 
-                        EventName="ItemTapped"
-                        BindingContext="{Binding BindingContext, Source={x:Reference HistoryList}}"
-                        Command="{Binding HistorySelectedItemCommand}"
-                        EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
-                </ListView.Behaviors>
+            <CollectionView SelectionMode="Single" Margin="20" 
+                            ItemsSource="{Binding HistoryItems}"
+                            SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                            SelectionChangedCommand="{Binding HistorySelectedItemCommand}">
 
-                <ListView.ItemTemplate>
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="entities:History">
-                        <ViewCell>
-                            <Frame Margin="0,5,0,5" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="12" BorderColor="#F1F5F9">
-                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
-                                    <Frame BackgroundColor="#EEF2FF" CornerRadius="12" Padding="12" HeightRequest="48" WidthRequest="48">
-                                        <Image Source="{Binding Icon}" />
-                                    </Frame>
-                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                        <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
-                                        <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
-                                    </VerticalStackLayout>
-                                </Grid>
-                            </Frame>
-                        </ViewCell>
+                        <Border Margin="0,5,0,5" BackgroundColor="White" StrokeShape="RoundRectangle 16" Padding="12" Stroke="#F1F5F9" StrokeThickness="1">
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                                <Border BackgroundColor="#EEF2FF" StrokeShape="RoundRectangle 12" Padding="12" HeightRequest="48" WidthRequest="48" Stroke="Transparent" StrokeThickness="0">
+                                    <Image Source="{Binding Icon}" />
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
                     </DataTemplate>
 
-                </ListView.ItemTemplate>
-            </ListView>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </ScrollView>
     </Grid>
 </ContentPage>

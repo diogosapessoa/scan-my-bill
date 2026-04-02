@@ -29,6 +29,9 @@ namespace ScanMyBill.ViewModels
         [ObservableProperty]
         private bool isFilterImage;
 
+        [ObservableProperty]
+        private History? selectedItem;
+
         public ObservableCollection<History> HistoryItems { get; set; } = new();
 
         private readonly IHistoryRepository _historyRepository;
@@ -92,34 +95,44 @@ namespace ScanMyBill.ViewModels
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task HistorySelectedItemAsync(History history)
+        private async Task HistorySelectedItemAsync()
         {
-            if (history == null) return;
+            if (SelectedItem == null) return;
+
+            var selectedItem = SelectedItem;
+
+            SelectedItem = null;
 
             //Em teoria não deve acontecer, só deveria ter salvo com campo valor
-            if (string.IsNullOrWhiteSpace(history.Value))
+            if (string.IsNullOrWhiteSpace(selectedItem.Value))
             {
-                if (await _alert.AcceptAsync("Deseja deletar?", history.Name, "Sim", "Não"))
+                if (await _alert.AcceptAsync("Deseja deletar?", selectedItem.Name, "Sim", "Não"))
                 {
-                    await _historyRepository.DeleteByIdAsync(history.Id);
-                    HistoryItems.Remove(history);
+                    await _historyRepository.DeleteByIdAsync(selectedItem.Id);
+                    HistoryItems.Remove(selectedItem);
                 }
             }
             else
             {
-                string choice = await _alert.ShowActionAsync(history.Name, "Cancelar", "Deletar", "Copiar para área de transferência");
+                string choice = await _alert.ShowActionAsync(selectedItem.Name, "Cancelar", "Deletar", "Copiar para área de transferência");
 
-                if (string.IsNullOrWhiteSpace(choice)) return;
+                if (string.IsNullOrWhiteSpace(choice))
+                {
+                    selectedItem = null;
+                    return;
+                }
 
                 if (choice.StartsWith("Deletar"))
                 {
-                    await _historyRepository.DeleteByIdAsync(history.Id);
-                    HistoryItems.Remove(history);
+                    await _historyRepository.DeleteByIdAsync(selectedItem.Id);
+                    HistoryItems.Remove(selectedItem);
                 }
 
-                if (choice.StartsWith("Copiar") && !string.IsNullOrWhiteSpace(history.Value))
-                    await _clipboard.SetTextAsync(history.Value);
+                if (choice.StartsWith("Copiar") && !string.IsNullOrWhiteSpace(selectedItem.Value))
+                    await _clipboard.SetTextAsync(selectedItem.Value);
             }
+
+            selectedItem = null;
         }
     }
 }

@@ -9,7 +9,6 @@
              x:DataType="viewModels:TabScanPageViewModel">
     <ContentPage.Resources>
         <converters:UtcToLocalConverter x:Key="UtcToLocalConverter" />
-        <toolkit:ItemTappedEventArgsConverter x:Key="ItemTappedEventArgsConverter" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *, Auto">
@@ -19,11 +18,11 @@
             <VerticalStackLayout Padding="20" Spacing="24">
 
                 <!-- Hero Scan Card -->
-                <Frame BackgroundColor="{StaticResource PrimaryBlue}" CornerRadius="24" HasShadow="False" BorderColor="Transparent" Padding="32">
+                <Border BackgroundColor="{StaticResource PrimaryBlue}" StrokeShape="RoundRectangle 24" Stroke="Transparent" StrokeThickness="0" Padding="32">
                     <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
-                        <Frame BackgroundColor="{StaticResource SecondaryBlue}" CornerRadius="30" HeightRequest="60" WidthRequest="60" Padding="0" HorizontalOptions="Center">
+                        <Border BackgroundColor="{StaticResource SecondaryBlue}" StrokeShape="RoundRectangle 30" HeightRequest="60" WidthRequest="60" Padding="0" HorizontalOptions="Center" Stroke="Transparent" StrokeThickness="0">
                             <Image Source="qr_code_scanner_24dp.png" HeightRequest="32" WidthRequest="32" HorizontalOptions="Center" VerticalOptions="Center" />
-                        </Frame>
+                        </Border>
 
                         <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                             <Label Text="Buscar QRcode" TextColor="White" FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center" />
@@ -40,7 +39,7 @@
                                     Command="{Binding SelectPngCommand}"/>
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Stats Row -->
                 <!--<Grid ColumnDefinitions="*, *" ColumnSpacing="16">
@@ -69,36 +68,33 @@
                 </Grid>
 
                 <!-- Scan List Items -->
-                <ListView x:Name="RecentList" HasUnevenRows="True" CachingStrategy="RetainElement" 
+                <CollectionView SelectionMode="Single"
                           ItemsSource="{Binding HistoryItems}"
-                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
-                    <ListView.Behaviors>
-                        <toolkit:EventToCommandBehavior 
-                            EventName="ItemTapped"
-                            BindingContext="{Binding BindingContext, Source={x:Reference RecentList}}"
-                            Command="{Binding RecentSelectedItemCommand}"
-                            EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
-                    </ListView.Behaviors>
+                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                          SelectionChangedCommand="{Binding RecentSelectedItemCommand}">
 
-                    <ListView.ItemTemplate>
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="entities:History">
-                            <ViewCell>
-                                <Frame Margin="0,5,0,5" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="12" BorderColor="#F1F5F9">
-                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
-                                        <Frame BackgroundColor="#EEF2FF" CornerRadius="12" Padding="12" HeightRequest="48" WidthRequest="48">
-                                            <Image Source="{Binding Icon}" />
-                                        </Frame>
-                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                            <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
-                                            <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
-                                        </VerticalStackLayout>
-                                    </Grid>
-                                </Frame>
-                            </ViewCell>
+                            <Border Margin="0,5,0,5" BackgroundColor="White" StrokeShape="RoundRectangle 16" Padding="12" Stroke="#F1F5F9" StrokeThickness="1">
+
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                                    <Border BackgroundColor="#EEF2FF" StrokeShape="RoundRectangle 12" Padding="12" HeightRequest="48" WidthRequest="48" Stroke="Transparent" StrokeThickness="0">
+                                        <Image Source="{Binding Icon}" />
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
 
-                    </ListView.ItemTemplate>
-                </ListView>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
             </VerticalStackLayout>
         </ScrollView>
