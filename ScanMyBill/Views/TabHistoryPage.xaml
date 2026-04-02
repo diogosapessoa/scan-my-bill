@@ -53,7 +53,7 @@
         <!-- Content Area (Scrollable History) -->
         <ScrollView Grid.Row="3">
 
-            <ListView x:Name="HistoryList" Margin="20" ItemsSource="{Binding HistoryItems}">
+            <ListView x:Name="HistoryList" HasUnevenRows="True" CachingStrategy="RetainElement" Margin="20" ItemsSource="{Binding HistoryItems}">
                 <ListView.Behaviors>
                     <toolkit:EventToCommandBehavior 
                         EventName="ItemTapped"

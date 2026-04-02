@@ -15,6 +15,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
@@ -27,21 +28,35 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        //Injeção de dependências
-        builder.Services.AddSingleton<IAlert, AlertService>();
-        builder.Services.AddSingleton<IFileChoose, FileChooseService>();
-        builder.Services.AddSingleton<IPdf, PdfToImageService>();
-        builder.Services.AddSingleton<IQrCode, QrCodeService>();
+        DependencyInjection(builder.Services);
 
-        builder.Services.AddSingleton(Clipboard.Default);
-        builder.Services.AddSingleton<IHistoryRepository, HistoryRepository>();
+        MapHandler();
 
-        builder.Services.AddTransient<TabScanPageViewModel>();
-        builder.Services.AddTransient<TabHistoryPageViewModel>();
+        return builder.Build();
+    }
 
+    private static void DependencyInjection(IServiceCollection services)
+    {
+        services.AddSingleton(Clipboard.Default);
+
+        services.AddSingleton<IAlert, AlertService>();
+        services.AddSingleton<IFileChoose, FileChooseService>();
+        services.AddSingleton<IPdf, PdfToImageService>();
+        services.AddSingleton<IQrCode, QrCodeService>();
+        services.AddSingleton<IAppNavigation, AppNavigationService>();
+
+        services.AddSingleton<IHistoryRepository, HistoryRepository>();
+
+        services.AddTransient<TabScanPageViewModel>();
+        services.AddTransient<TabHistoryPageViewModel>();
+    }
+
+    private static void MapHandler()
+    {
         //Ajuste visual para Entry
         EntryHandler.Mapper.AppendToMapping("NoBorderEntry", (handler, view) =>
         {
+
 #if ANDROID
             handler.PlatformView.Background = null;
             handler.PlatformView.SetBackgroundColor(Android.Graphics.Color.Transparent);
@@ -51,8 +66,7 @@ public static class MauiProgram
         handler.PlatformView.Layer.BorderWidth = 0;
         handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
 #endif
-        });
 
-        return builder.Build();
+        });
     }
 }

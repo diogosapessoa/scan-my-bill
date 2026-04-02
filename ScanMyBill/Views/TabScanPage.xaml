@@ -61,11 +61,17 @@
                 <!-- Recent Scans Section -->
                 <Grid ColumnDefinitions="*, Auto" Margin="0,8,0,0">
                     <Label Text="Recentes" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
-                    <Label Grid.Column="1" Text="Ver histórico" TextColor="#2563EB" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                    <Label Grid.Column="1" Text="Ver histórico" TextColor="#2563EB" FontSize="14" FontAttributes="Bold" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToHistoryTabCommand}" NumberOfTapsRequired="1" />
+                        </Label.GestureRecognizers>
+                    </Label>
                 </Grid>
 
                 <!-- Scan List Items -->
-                <ListView x:Name="RecentList" ItemsSource="{Binding HistoryItems}">
+                <ListView x:Name="RecentList" HasUnevenRows="True" CachingStrategy="RetainElement" 
+                          ItemsSource="{Binding HistoryItems}"
+                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                     <ListView.Behaviors>
                         <toolkit:EventToCommandBehavior 
                             EventName="ItemTapped"

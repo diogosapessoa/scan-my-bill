@@ -19,11 +19,15 @@ public sealed class HistoryRepository : IHistoryRepository
 
     public async Task<List<History>> GetAllAsync(CancellationToken cancellationToken = default)
     {
+        await _connection.CreateTableAsync<History>();
+
         return await _connection.Table<History>().ToListAsync();
     }
 
     public async Task<List<History>> GetAllByFilters(EFileFormat format, string? name, CancellationToken cancellationToken = default)
     {
+        await _connection.CreateTableAsync<History>();
+
         Expression<Func<History, bool>> filter;
 
         if (format == EFileFormat.Undefined && !string.IsNullOrWhiteSpace(name))
@@ -56,6 +60,8 @@ public sealed class HistoryRepository : IHistoryRepository
 
     public async Task<List<History>> GetRecents(int limit, CancellationToken cancellationToken = default)
     {
+        await _connection.CreateTableAsync<History>();
+
         return await _connection.Table<History>()
             .OrderByDescending(x => x.Id)
             .Take(limit)

@@ -1,7 +1,4 @@
-﻿using ScanMyBill.Data;
-using ScanMyBill.Entities;
-
-namespace ScanMyBill;
+﻿namespace ScanMyBill;
 
 public partial class App : Application
 {
@@ -23,12 +20,5 @@ public partial class App : Application
 #endif
 
         return window;
-    }
-
-    protected override async void OnStart()
-    {
-        await DatabaseHelper.Connection.CreateTableAsync<History>();
-
-        base.OnStart();
     }
 }

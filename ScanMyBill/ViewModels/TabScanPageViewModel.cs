@@ -14,6 +14,9 @@ namespace ScanMyBill.ViewModels;
 
 public partial class TabScanPageViewModel : ObservableObject
 {
+    [ObservableProperty]
+    private History? selectedItem;
+
     public ObservableCollection<History> HistoryItems { get; set; } = new();
 
     private readonly IFileChoose _fileChoose;
@@ -22,9 +25,10 @@ public partial class TabScanPageViewModel : ObservableObject
     private readonly IAlert _alert;
     private readonly IClipboard _clipboard;
     private readonly IHistoryRepository _historyRepository;
+    private readonly IAppNavigation _navigation;
 
     public TabScanPageViewModel(IFileChoose fileChoose, IPdf pdf, IQrCode qrCode,
-        IAlert alert, IClipboard clipboard, IHistoryRepository historyRepository)
+        IAlert alert, IClipboard clipboard, IHistoryRepository historyRepository, IAppNavigation navigation)
     {
         _fileChoose = fileChoose;
         _pdf = pdf;
@@ -32,6 +36,7 @@ public partial class TabScanPageViewModel : ObservableObject
         _alert = alert;
         _clipboard = clipboard;
         _historyRepository = historyRepository;
+        _navigation = navigation;
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
@@ -88,12 +93,20 @@ public partial class TabScanPageViewModel : ObservableObject
     [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task RecentSelectedItemAsync(History history)
     {
+        SelectedItem = null; //Tirar o indicador de seleção
+
         if (string.IsNullOrWhiteSpace(history?.Value)) return;
 
         bool accept = await _alert.AcceptAsync("Copiar para área de transferência?", history.Value, "Sim", "Não");
 
         if (accept)
             await _clipboard.SetTextAsync(history.Value);
+    }
+
+    [RelayCommand(AllowConcurrentExecutions = false)]
+    private async Task GoToHistoryTabAsync()
+    {
+        await _navigation.GoToHistoryTabAsync();
     }
 
     public async Task LoadRecentsAsync()
