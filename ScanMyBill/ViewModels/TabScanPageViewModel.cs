@@ -88,10 +88,9 @@ public partial class TabScanPageViewModel : ObservableObject
     [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task RecentSelectedItemAsync(History history)
     {
-        if (history == null || string.IsNullOrWhiteSpace(history.Value)) return;
+        if (string.IsNullOrWhiteSpace(history?.Value)) return;
 
-        bool accept = await _alert.AcceptAsync("Copiar para área de transferência?",
-            history.Value ?? "Não foi encontrado QRCODE no arquivo.", "Sim", "Não");
+        bool accept = await _alert.AcceptAsync("Copiar para área de transferência?", history.Value, "Sim", "Não");
 
         if (accept)
             await _clipboard.SetTextAsync(history.Value);

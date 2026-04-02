@@ -11,6 +11,7 @@
         <converters:UtcToLocalConverter x:Key="UtcToLocalConverter" />
         <toolkit:BoolToObjectConverter x:Key="BoolFilterBackgroundToColor" x:TypeArguments="Color" TrueObject="{StaticResource SecondaryBlue}" FalseObject="#E2E8F0" />
         <toolkit:BoolToObjectConverter x:Key="BoolFilterTextToColor" x:TypeArguments="Color" TrueObject="#FFFFFF" FalseObject="#475569" />
+        <toolkit:ItemTappedEventArgsConverter x:Key="ItemTappedEventArgsConverter" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
@@ -52,25 +53,33 @@
         <!-- Content Area (Scrollable History) -->
         <ScrollView Grid.Row="3">
 
-            <ListView ItemsSource="{Binding HistoryItems}" Margin="20">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="entities:History">
-                    <ViewCell>
-                        <Frame Margin="0,5,0,5" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="12" BorderColor="#F1F5F9">
-                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
-                                <Frame BackgroundColor="#EEF2FF" CornerRadius="12" Padding="12" HeightRequest="48" WidthRequest="48">
-                                    <Image Source="{Binding Icon}" />
-                                </Frame>
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                    <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
-                                    <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Frame>
-                    </ViewCell>
-                </DataTemplate>
+            <ListView x:Name="HistoryList" Margin="20" ItemsSource="{Binding HistoryItems}">
+                <ListView.Behaviors>
+                    <toolkit:EventToCommandBehavior 
+                        EventName="ItemTapped"
+                        BindingContext="{Binding BindingContext, Source={x:Reference HistoryList}}"
+                        Command="{Binding HistorySelectedItemCommand}"
+                        EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
+                </ListView.Behaviors>
 
-            </ListView.ItemTemplate>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="entities:History">
+                        <ViewCell>
+                            <Frame Margin="0,5,0,5" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="12" BorderColor="#F1F5F9">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                                    <Frame BackgroundColor="#EEF2FF" CornerRadius="12" Padding="12" HeightRequest="48" WidthRequest="48">
+                                        <Image Source="{Binding Icon}" />
+                                    </Frame>
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Frame>
+                        </ViewCell>
+                    </DataTemplate>
+
+                </ListView.ItemTemplate>
             </ListView>
         </ScrollView>
     </Grid>

@@ -27,6 +27,7 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+        //Injeção de dependências
         builder.Services.AddSingleton<IAlert, AlertService>();
         builder.Services.AddSingleton<IFileChoose, FileChooseService>();
         builder.Services.AddSingleton<IPdf, PdfToImageService>();
@@ -38,6 +39,7 @@ public static class MauiProgram
         builder.Services.AddTransient<TabScanPageViewModel>();
         builder.Services.AddTransient<TabHistoryPageViewModel>();
 
+        //Ajuste visual para Entry
         EntryHandler.Mapper.AppendToMapping("NoBorderEntry", (handler, view) =>
         {
 #if ANDROID
