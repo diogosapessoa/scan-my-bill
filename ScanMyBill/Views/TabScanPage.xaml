@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:ScanMyBill.ViewModels"
+             xmlns:entities="clr-namespace:ScanMyBill.Entities"
+             xmlns:converters="clr-namespace:ScanMyBill.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ScanMyBill.Views.TabScanPage"
+             x:DataType="viewModels:TabScanPageViewModel">
+    <ContentPage.Resources>
+        <converters:UtcToLocalConverter x:Key="UtcToLocalConverter" />
+        <toolkit:ItemTappedEventArgsConverter x:Key="ItemTappedEventArgsConverter" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="24">
+
+                <!-- Hero Scan Card -->
+                <Frame BackgroundColor="{StaticResource PrimaryBlue}" CornerRadius="24" HasShadow="False" BorderColor="Transparent" Padding="32">
+                    <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                        <Frame BackgroundColor="{StaticResource SecondaryBlue}" CornerRadius="30" HeightRequest="60" WidthRequest="60" Padding="0" HorizontalOptions="Center">
+                            <Image Source="qr_code_scanner_24dp.png" HeightRequest="32" WidthRequest="32" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Frame>
+
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="Buscar QRcode" TextColor="White" FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                            <Label Text="Selecione um arquivo, PDF ou Imagem, para buscar algum QRcoede" 
+                               TextColor="#E2E8F0" FontSize="14" HorizontalTextAlignment="Center" LineHeight="1.4" />
+                        </VerticalStackLayout>
+
+                        <HorizontalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Button Text="PDF" BackgroundColor="{StaticResource SecondaryBlue}" TextColor="White" CornerRadius="20" HeightRequest="40" WidthRequest="60" FontSize="12" FontAttributes="Bold"
+                                    Command="{Binding SelectPdfCommand}"/>
+                            <Button Text="JPG" BackgroundColor="{StaticResource SecondaryBlue}" TextColor="White" CornerRadius="20" HeightRequest="40" WidthRequest="60" FontSize="12" FontAttributes="Bold"
+                                    Command="{Binding SelectJpgCommand}"/>
+                            <Button Text="PNG" BackgroundColor="{StaticResource SecondaryBlue}" TextColor="White" CornerRadius="20" HeightRequest="40" WidthRequest="60" FontSize="12" FontAttributes="Bold"
+                                    Command="{Binding SelectPngCommand}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Stats Row -->
+                <!--<Grid ColumnDefinitions="*, *" ColumnSpacing="16">
+                    <Frame Grid.Column="0" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="20" BorderColor="#F1F5F9">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="ESCANEADOS" TextColor="#64748B" FontSize="12" FontAttributes="Bold" CharacterSpacing="1" />
+                            <Label Text="1,284" TextColor="#0F172A" FontSize="24" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Column="1" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="20" BorderColor="#F1F5F9">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="TAXA ACERTO" TextColor="#64748B" FontSize="12" FontAttributes="Bold" CharacterSpacing="1" />
+                            <Label Text="99.2%" TextColor="#0F172A" FontSize="24" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>-->
+
+                <!-- Recent Scans Section -->
+                <Grid ColumnDefinitions="*, Auto" Margin="0,8,0,0">
+                    <Label Text="Recentes" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Label Grid.Column="1" Text="Ver histórico" TextColor="#2563EB" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Scan List Items -->
+                <ListView x:Name="RecentList" ItemsSource="{Binding HistoryItems}">
+                    <ListView.Behaviors>
+                        <toolkit:EventToCommandBehavior 
+                            EventName="ItemTapped"
+                            BindingContext="{Binding BindingContext, Source={x:Reference RecentList}}"
+                            Command="{Binding RecentSelectedItemCommand}"
+                            EventArgsConverter="{StaticResource ItemTappedEventArgsConverter}" />
+                    </ListView.Behaviors>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="entities:History">
+                            <ViewCell>
+                                <Frame Margin="0,5,0,5" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="12" BorderColor="#F1F5F9">
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                                        <Frame BackgroundColor="#EEF2FF" CornerRadius="12" Padding="12" HeightRequest="48" WidthRequest="48">
+                                            <Image Source="{Binding Icon}" />
+                                        </Frame>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Frame>
+                            </ViewCell>
+                        </DataTemplate>
+
+                    </ListView.ItemTemplate>
+                </ListView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

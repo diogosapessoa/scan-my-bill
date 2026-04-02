@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:ScanMyBill.ViewModels"
+             xmlns:entities="clr-namespace:ScanMyBill.Entities"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:converters="clr-namespace:ScanMyBill.Converters"
+             x:Class="ScanMyBill.Views.TabHistoryPage"
+             x:DataType="viewModels:TabHistoryPageViewModel">
+    <ContentPage.Resources>
+        <converters:UtcToLocalConverter x:Key="UtcToLocalConverter" />
+        <toolkit:BoolToObjectConverter x:Key="BoolFilterBackgroundToColor" x:TypeArguments="Color" TrueObject="{StaticResource SecondaryBlue}" FalseObject="#E2E8F0" />
+        <toolkit:BoolToObjectConverter x:Key="BoolFilterTextToColor" x:TypeArguments="Color" TrueObject="#FFFFFF" FalseObject="#475569" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
+
+        <!-- Header & Search -->
+        <VerticalStackLayout Grid.Row="0" Padding="24, 16, 24, 8" Spacing="20">
+
+            <!-- Search Bar -->
+            <Frame BackgroundColor="#E2E8F0" CornerRadius="12" HasShadow="False" BorderColor="Transparent" Padding="12, 0">
+                <Grid ColumnDefinitions="Auto, *">
+                    <Image Source="search_24dp.png" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" Margin="0,0,12,0" />
+                    <Entry Grid.Column="1" ReturnType="Search" Placeholder="Nome do arquivo..." 
+                           PlaceholderColor="#64748B" TextColor="#0F172A" FontSize="15" HeightRequest="48" VerticalOptions="Center"
+                           Text="{Binding InputSearch}"
+                           ReturnCommand="{Binding SearchEnterCommand}">
+                    </Entry>
+                </Grid>
+            </Frame>
+        </VerticalStackLayout>
+
+        <!-- Filters -->
+        <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,8">
+            <HorizontalStackLayout Padding="24, 0" Spacing="12" HorizontalOptions="Center">
+                <Button Text="Tudo" BackgroundColor="{Binding IsFilterAll, Converter={StaticResource BoolFilterBackgroundToColor}}"
+                        TextColor="{Binding IsFilterAll, Converter={StaticResource BoolFilterTextToColor}}" 
+                        Command="{Binding FilterAllSelectedCommand}"
+                        CornerRadius="20" HeightRequest="40" Padding="20,0" FontAttributes="Bold" />
+                <Button Text="PDF" BackgroundColor="{Binding IsFilterPdf, Converter={StaticResource BoolFilterBackgroundToColor}}" 
+                        TextColor="{Binding IsFilterPdf, Converter={StaticResource BoolFilterTextToColor}}" 
+                        Command="{Binding FilterPdfSelectedCommand}"
+                        CornerRadius="20" HeightRequest="40" Padding="20,0" />
+                <Button Text="Imagem" BackgroundColor="{Binding IsFilterImage, Converter={StaticResource BoolFilterBackgroundToColor}}" 
+                        TextColor="{Binding IsFilterImage, Converter={StaticResource BoolFilterTextToColor}}" 
+                        Command="{Binding FilterImageSelectedCommand}"
+                        CornerRadius="20" HeightRequest="40" Padding="20,0" />
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Content Area (Scrollable History) -->
+        <ScrollView Grid.Row="3">
+
+            <ListView ItemsSource="{Binding HistoryItems}" Margin="20">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="entities:History">
+                    <ViewCell>
+                        <Frame Margin="0,5,0,5" BackgroundColor="White" CornerRadius="16" HasShadow="False" Padding="12" BorderColor="#F1F5F9">
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                                <Frame BackgroundColor="#EEF2FF" CornerRadius="12" Padding="12" HeightRequest="48" WidthRequest="48">
+                                    <Image Source="{Binding Icon}" />
+                                </Frame>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" TextColor="#0F172A" FontAttributes="Bold" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding CreatedAt, Converter={StaticResource UtcToLocalConverter}}" TextColor="#64748B" FontSize="13" MaxLines="1" LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </ViewCell>
+                </DataTemplate>
+
+            </ListView.ItemTemplate>
+            </ListView>
+        </ScrollView>
+    </Grid>
+</ContentPage>

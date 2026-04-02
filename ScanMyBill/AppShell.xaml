@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="ScanMyBill.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:ScanMyBill.Views"
+    Title="Leia meu QRcode">
+    <TabBar>
+        <Tab Title="Escanear" Icon="qr_code_scanner_24dp">
+            <ShellContent
+                ContentTemplate="{DataTemplate local:TabScanPage}"
+                Route="TabScanPage" />
+        </Tab>
+        <Tab Title="Histórico" Icon="history_24dp">
+            <ShellContent
+                ContentTemplate="{DataTemplate local:TabHistoryPage}"
+                Route="TabHistoryPage" />
+        </Tab>
+    </TabBar>
+</Shell>
