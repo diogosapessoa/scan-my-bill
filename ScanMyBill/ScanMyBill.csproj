@@ -11,7 +11,7 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <NoWarn>MVVMTK0045</NoWarn>
+        <NoWarn>MVVMTK0045,MAUIG2045</NoWarn>
         <AllowUnsafeBlocks Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">true</AllowUnsafeBlocks>
 
         <MauiXamlInflator>SourceGen</MauiXamlInflator>
@@ -38,10 +38,15 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg"
+                  ForegroundFile="Resources\AppIcon\appiconfg.svg"
+                  Color="#512BD4"
+                  TintColor="#FFFFFF"
+                  BaseSize="24,24"
+                  ForegroundScale="0.65" />
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#2563EB" BaseSize="128,128" />
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#2563EB" />
 
         <!-- Images -->
         <MauiImage Include="Resources\Images\*" />

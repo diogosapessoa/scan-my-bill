@@ -43,7 +43,7 @@ public partial class TabScanPageViewModel : ObservableObject
     private async Task SelectPdfAsync(CancellationToken cancellationToken = default)
     {
         using var pdfResult = await _fileChoose.GetPdfAsync(cancellationToken);
-        if (pdfResult == null || !pdfResult.HasStream) return;
+        if (pdfResult == null || pdfResult.Stream == null || pdfResult.Stream == Stream.Null) return;
         using var skBitmap = await _pdf.ToImageAsync(pdfResult.Stream);
         string? value = await ScanAndShowQrCode(skBitmap);
         if (string.IsNullOrWhiteSpace(value))
