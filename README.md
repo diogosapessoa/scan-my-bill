@@ -189,7 +189,7 @@ dotnet build -f net10.0-android -c Debug
 
 **Compilar APK de Release:**
 ```bash
-dotnet publish -f net10.0-android -c Release
+dotnet publish -f net10.0-android -c Release /p:AndroidKeyStore=true /p:AndroidSigningKeyStore="C:/Users/diogo/AppData/Local/Xamarin/Mono for Android/Keystore/scanmybill/scanmybill.keystore" /p:AndroidSigningKeyAlias=scanmybill /p:AndroidSigningKeyPass=***** /p:AndroidSigningStorePass=*****
 ```
 
 **Executar em Dispositivo Conectado/Emulador:**

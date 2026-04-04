@@ -3,6 +3,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Handlers;
 
+using Plugin.AdMob;
+using Plugin.AdMob.Configuration;
+
 using ScanMyBill.Interfaces;
 using ScanMyBill.Repositories;
 using ScanMyBill.Services;
@@ -19,6 +22,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseAdMob()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("Inter.ttf", "Inter");
@@ -26,6 +30,9 @@ public static class MauiProgram
 
 #if DEBUG
         builder.Logging.AddDebug();
+
+        AdConfig.UseTestAdUnitIds = true;
+        AdConfig.AddTestDevice("18F3F06D35661D6D4556C8F76699738C");
 #endif
 
         DependencyInjection(builder.Services);

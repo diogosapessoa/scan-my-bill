@@ -1,10 +1,16 @@
 ﻿using Foundation;
 
-namespace ScanMyBill
+namespace ScanMyBill;
+
+[Register("AppDelegate")]
+public class AppDelegate : MauiUIApplicationDelegate
 {
-    [Register("AppDelegate")]
-    public class AppDelegate : MauiUIApplicationDelegate
+    protected override MauiApp CreateMauiApp()
     {
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        var app = MauiProgram.CreateMauiApp();
+
+        Google.MobileAds.MobileAds.SharedInstance.Start(completionHandler: null);
+
+        return app;
     }
 }

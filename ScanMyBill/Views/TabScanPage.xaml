@@ -5,6 +5,7 @@
              xmlns:entities="clr-namespace:ScanMyBill.Entities"
              xmlns:converters="clr-namespace:ScanMyBill.Converters"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:admob="clr-namespace:Plugin.AdMob;assembly=Plugin.AdMob"
              x:Class="ScanMyBill.Views.TabScanPage"
              x:DataType="viewModels:TabScanPageViewModel">
     <ContentPage.Resources>
@@ -57,6 +58,8 @@
                     </Frame>
                 </Grid>-->
 
+                <admob:BannerAd AdUnitId="ca-app-pub-1727500937789032/3898760905" AdSize="SmartBanner" MinimumHeightRequest="50" />
+
                 <!-- Recent Scans Section -->
                 <Grid ColumnDefinitions="*, Auto" Margin="0,8,0,0">
                     <Label Text="Recentes" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" />
@@ -97,6 +100,7 @@
                 </CollectionView>
 
             </VerticalStackLayout>
+
         </ScrollView>
     </Grid>
 </ContentPage>

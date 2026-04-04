@@ -45,7 +45,7 @@ public partial class TabScanPageViewModel : ObservableObject
         using var pdfResult = await _fileChoose.GetPdfAsync(cancellationToken);
         if (pdfResult == null || pdfResult.Stream == null || pdfResult.Stream == Stream.Null) return;
         using var skBitmap = await _pdf.ToImageAsync(pdfResult.Stream);
-        string? value = await ScanAndShowQrCode(skBitmap);
+        string? value = await _qrCode.ScanAsync(skBitmap);
         if (string.IsNullOrWhiteSpace(value))
         {
             await _alert.ShowAsync("Aviso", "Não foi encontrado QRCODE no arquivo.");
@@ -54,6 +54,7 @@ public partial class TabScanPageViewModel : ObservableObject
         var history = new History().FromFileChooseResult(pdfResult).WithValue(value);
         await _historyRepository.SaveAsync(history);
         HistoryItems.Insert(0, history);
+        await ShowQrCodeAndCopyToClipboard(value);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
@@ -62,7 +63,7 @@ public partial class TabScanPageViewModel : ObservableObject
         using var jpgResult = await _fileChoose.GetImageAsync(EFileFormat.Jpg, cancellationToken);
         if (jpgResult == null || !jpgResult.HasStream) return;
         using var skBitmap = SKBitmap.Decode(jpgResult.Stream);
-        string? value = await ScanAndShowQrCode(skBitmap);
+        string? value = await _qrCode.ScanAsync(skBitmap);
         if (string.IsNullOrWhiteSpace(value))
         {
             await _alert.ShowAsync("Aviso", "Não foi encontrado QRCODE no arquivo.");
@@ -71,6 +72,7 @@ public partial class TabScanPageViewModel : ObservableObject
         var history = new History().FromFileChooseResult(jpgResult).WithValue(value);
         await _historyRepository.SaveAsync(history);
         HistoryItems.Insert(0, history);
+        await ShowQrCodeAndCopyToClipboard(value);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
@@ -79,7 +81,7 @@ public partial class TabScanPageViewModel : ObservableObject
         using var pngResult = await _fileChoose.GetImageAsync(EFileFormat.Png, cancellationToken);
         if (pngResult == null || !pngResult.HasStream) return;
         using var skBitmap = SKBitmap.Decode(pngResult.Stream);
-        string? value = await ScanAndShowQrCode(skBitmap);
+        string? value = await _qrCode.ScanAsync(skBitmap);
         if (string.IsNullOrWhiteSpace(value))
         {
             await _alert.ShowAsync("Aviso", "Não foi encontrado QRCODE no arquivo.");
@@ -88,6 +90,7 @@ public partial class TabScanPageViewModel : ObservableObject
         var history = new History().FromFileChooseResult(pngResult).WithValue(value);
         await _historyRepository.SaveAsync(history);
         HistoryItems.Insert(0, history);
+        await ShowQrCodeAndCopyToClipboard(value);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
@@ -121,17 +124,12 @@ public partial class TabScanPageViewModel : ObservableObject
             HistoryItems.Add(recent);
     }
 
-    private async Task<string?> ScanAndShowQrCode(SKBitmap skBitmap)
+    private async Task ShowQrCodeAndCopyToClipboard(string? text)
     {
-        string? text = await _qrCode.ScanAsync(skBitmap);
-        if (string.IsNullOrWhiteSpace(text)) return string.Empty;
-
         bool accept = await _alert.AcceptAsync("Copiar para área de transferência?",
             text ?? "Não foi encontrado QRCODE no arquivo.", "Sim", "Não");
 
         if (accept)
             await _clipboard.SetTextAsync(text);
-
-        return text;
     }
 }
