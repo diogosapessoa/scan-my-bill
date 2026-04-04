@@ -33,7 +33,7 @@
 
         <!-- Filters -->
         <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,8">
-            <HorizontalStackLayout Padding="24, 0" Spacing="12" HorizontalOptions="Center">
+            <HorizontalStackLayout Padding="24, 0" Spacing="12">
                 <Button Text="Tudo" BackgroundColor="{Binding IsFilterAll, Converter={StaticResource BoolFilterBackgroundToColor}}"
                         TextColor="{Binding IsFilterAll, Converter={StaticResource BoolFilterTextToColor}}" 
                         Command="{Binding FilterAllSelectedCommand}"

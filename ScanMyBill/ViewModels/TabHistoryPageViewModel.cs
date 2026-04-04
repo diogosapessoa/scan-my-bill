@@ -101,7 +101,7 @@ namespace ScanMyBill.ViewModels
 
             var selectedItem = SelectedItem;
 
-            SelectedItem = null;
+            SelectedItem = null;//Remover seleção visual
 
             //Em teoria não deve acontecer, só deveria ter salvo com campo valor
             if (string.IsNullOrWhiteSpace(selectedItem.Value))
@@ -131,8 +131,6 @@ namespace ScanMyBill.ViewModels
                 if (choice.StartsWith("Copiar") && !string.IsNullOrWhiteSpace(selectedItem.Value))
                     await _clipboard.SetTextAsync(selectedItem.Value);
             }
-
-            selectedItem = null;
         }
     }
 }

@@ -14,6 +14,8 @@ namespace ScanMyBill.ViewModels;
 
 public partial class TabScanPageViewModel : ObservableObject
 {
+    public const int MaxHistoryItems = 5;// Valor arbitrário para limitar a quantidade de itens recentes
+
     [ObservableProperty]
     private History? selectedItem;
 
@@ -98,7 +100,7 @@ public partial class TabScanPageViewModel : ObservableObject
     {
         var selectedItem = SelectedItem;
 
-        SelectedItem = null;
+        SelectedItem = null;//Remover seleção visual
 
         if (string.IsNullOrWhiteSpace(selectedItem?.Value)) return;
 
@@ -116,7 +118,7 @@ public partial class TabScanPageViewModel : ObservableObject
 
     public async Task LoadRecentsAsync()
     {
-        var recents = await _historyRepository.GetRecents(5);// Valor arbitrário para limitar a quantidade de itens recentes
+        var recents = await _historyRepository.GetRecents(MaxHistoryItems);
 
         HistoryItems.Clear();
 
