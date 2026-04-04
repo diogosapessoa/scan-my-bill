@@ -1,6 +1,4 @@
-﻿using ScanMyBill.Entities;
-
-using SQLite;
+﻿using SQLite;
 
 namespace ScanMyBill.Data;
 
@@ -27,10 +25,4 @@ public sealed class DatabaseHelper
     }
 
     private DatabaseHelper() { }
-
-    public async Task CreateTables()
-    {
-        if (_connection != null)
-            await _connection.CreateTableAsync<History>();
-    }
 }

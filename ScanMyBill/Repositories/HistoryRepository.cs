@@ -10,6 +10,8 @@ namespace ScanMyBill.Repositories;
 
 public sealed class HistoryRepository : IHistoryRepository
 {
+    public const int MaxHistoryItems = 100; // Limite fixado para evitar sobrecarga de memória, pode ser ajustado conforme necessário
+
     private readonly SQLiteAsyncConnection _connection;
 
     public HistoryRepository()
@@ -21,7 +23,7 @@ public sealed class HistoryRepository : IHistoryRepository
     {
         await _connection.CreateTableAsync<History>();
 
-        return await _connection.Table<History>().ToListAsync();
+        return await _connection.Table<History>().Take(MaxHistoryItems).ToListAsync();
     }
 
     public async Task<List<History>> GetAllByFilters(EFileFormat format, string? name, CancellationToken cancellationToken = default)
@@ -53,7 +55,7 @@ public sealed class HistoryRepository : IHistoryRepository
 
         return await _connection.Table<History>()
             .OrderByDescending(x => x.Id)
-            .Take(100) //Limite fixado para evitar sobrecarga de memória, pode ser ajustado conforme necessário
+            .Take(MaxHistoryItems)
             .Where(filter)
             .ToListAsync();
     }
