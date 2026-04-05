@@ -1,6 +1,6 @@
-﻿using ScanMyBill.Enums;
+using ScanMyBill.Core.Enums;
 
-namespace ScanMyBill.Models;
+namespace ScanMyBill.Core.Models;
 
 public sealed class FileChooseResult : IDisposable
 {

@@ -1,4 +1,4 @@
-using ScanMyBill.ViewModels;
+using ScanMyBill.Core.ViewModels;
 
 namespace ScanMyBill.Views;
 

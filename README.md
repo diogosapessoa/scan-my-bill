@@ -2,6 +2,7 @@
 
 ![Plataforma](https://img.shields.io/badge/plataforma-Android%20%7C%20iOS%20%7C%20macOS%20%7C%20Windows-brightgreen)
 ![Framework](https://img.shields.io/badge/framework-.NET%20MAUI%2010-blue)
+![Testes](https://img.shields.io/badge/testes-56%20passando-brightgreen)
 ![Licença](https://img.shields.io/badge/licença-MIT-green)
 ![Status](https://img.shields.io/badge/status-Ativo-success)
 
@@ -17,10 +18,10 @@ Projetado com arquitetura MVVM moderna e construído no framework .NET MAUI, o S
   - Documentos PDF (conversão automática para imagens)
   - Imagens JPEG
   - Imagens PNG
-  
+
 - ✅ **Detecção Inteligente de QR Code**: Utiliza biblioteca ZXing para reconhecimento preciso e de alto desempenho
 
-- ✅ **Histórico Persistente**: 
+- ✅ **Histórico Persistente**:
   - Armazenamento automático de todos os registros de scan em banco de dados SQLite local
   - Metadados incluem nome do arquivo, formato do arquivo, timestamp de extração e valor do QR code
   - Registros históricos ilimitados com recuperação rápida
@@ -43,6 +44,8 @@ Projetado com arquitetura MVVM moderna e construído no framework .NET MAUI, o S
 
 - ✅ **Timestamps Sensíveis ao Fuso Horário**: Todos os horários de scan armazenados em UTC com conversão automática para fuso horário local para exibição
 
+- ✅ **Testes Unitários**: Cobertura de testes com xUnit e NSubstitute para ViewModels, Entities e Models
+
 ---
 
 ## Pilha Tecnológica
@@ -59,10 +62,22 @@ Projetado com arquitetura MVVM moderna e construído no framework .NET MAUI, o S
 | **Controles de UI** | CommunityToolkit.Maui | 14.0.1 | Comportamentos de layout, conversores |
 | **Contêiner DI** | Microsoft.Extensions.DependencyInjection | 10.0.0 | Injeção de dependência |
 | **Logging** | Microsoft.Extensions.Logging.Debug | 10.0.0 | Saída de debug |
+| **Testes** | xUnit | 2.9.3 | Framework de testes unitários |
+| **Mocks** | NSubstitute | 5.3.0 | Mocking de interfaces |
 
 ---
 
 ## Arquitetura
+
+### Estrutura de Projetos
+
+O projeto é dividido em duas bibliotecas para separar código testável do código dependente de MAUI:
+
+| Projeto | Framework | Responsabilidade |
+|---------|-----------|------------------|
+| **ScanMyBill.Core** | `net10.0` | ViewModels, Entities, Models, Enums, Interfaces, Repositórios (contratos) |
+| **ScanMyBill** | `net10.0-*` | Views (XAML), Serviços (implementações MAUI), Repositório (SQLite), Platform-specific |
+| **ScanMyBilll.Test** | `net10.0` | Testes unitários com xUnit + NSubstitute |
 
 ### Padrão MVVM
 
@@ -70,29 +85,30 @@ O ScanMyBill segue o padrão arquitetural **Model-View-ViewModel (MVVM)** com cl
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│ Camada de UI (Views)                                │
+│ Camada de UI (Views) - ScanMyBill                   │
 │ - TabScanPage.xaml                                  │
 │ - TabHistoryPage.xaml                               │
 └──────────────────┬──────────────────────────────────┘
                    │ Bindings & Comandos
 ┌──────────────────▼──────────────────────────────────┐
-│ Camada de Apresentação (ViewModels)                 │
+│ Camada de Apresentação (ViewModels) - ScanMyBill.Core │
 │ - TabScanPageViewModel                              │
 │ - TabHistoryPageViewModel                           │
 └──────────────────┬──────────────────────────────────┘
                    │ Chamadas de Serviço
 ┌──────────────────▼──────────────────────────────────┐
-│ Lógica de Negócio & Serviços                        │
+│ Lógica de Negócio & Serviços - ScanMyBill           │
 │ - QrCodeService           (Operações de Scan)       │
 │ - PdfToImageService       (Conversão de PDF)        │
 │ - FileChooseService       (Seleção de Arquivo)      │
 │ - AlertService            (Diálogos do Usuário)     │
 │ - AppNavigationService    (Navegação de Abas)       │
+│ - ClipboardService        (Área de transferência)   │
 └──────────────────┬──────────────────────────────────┘
                    │ Padrão de Repository
 ┌──────────────────▼──────────────────────────────────┐
-│ Camada de Acesso a Dados                            │
-│ - IHistoryRepository / HistoryRepository            │
+│ Camada de Acesso a Dados - ScanMyBill               │
+│ - HistoryRepository (Implementação SQLite)          │
 │ - DatabaseHelper (Conexão SQLite)                   │
 └──────────────────┬──────────────────────────────────┘
                    │ Consultas SQL
@@ -110,20 +126,21 @@ O ScanMyBill segue o padrão arquitetural **Model-View-ViewModel (MVVM)** com cl
 - CollectionView para renderização eficiente de lista
 - Componentes Border para estilo moderno
 
-**ViewModels (C#)**
+**ViewModels (C#) — ScanMyBill.Core**
 - Propriedades observáveis usando atributo `ObservableProperty`
 - Comandos de retransmissão usando `RelayCommand` para ações do usuário
 - Coleção HistoryItems sincronizada com repositório
 - Gerenciamento de estado de seleção
+- Métodos públicos para permitir testes unitários
 
 **Serviços (Camada de Abstração)**
-- Interfaces independentes de plataforma (IFileChoose, IPdf, IQrCode, IAlert, IAppNavigation)
-- Implementações específicas de plataforma para Android, iOS, macOS, Windows
+- Interfaces independentes de plataforma definidas em `ScanMyBill.Core` (IFileChoose, IPdf, IQrCode, IAlert, IAppNavigation, IClipboardService)
+- Implementações específicas de plataforma em `ScanMyBill` para Android, iOS, macOS, Windows
 - Injeção de dependência habilita testes e alternância de plataforma
 
 **Padrão de Repository**
 - HistoryRepository abstrai operações SQLite
-- Contrato IHistoryRepository habilita alternância flexível de fonte de dados
+- Contrato IHistoryRepository (em Core) habilita alternância flexível de fonte de dados e mocking em testes
 - Consultas LINQ-to-Objects com filtragem e pesquisa
 
 **Injeção de Dependência (DI)**
@@ -164,13 +181,7 @@ git clone https://github.com/diogosapessoa/scan-my-bill.git
 cd scan-my-bill
 ```
 
-### 2. Navegue até o Projeto
-
-```bash
-cd ScanMyBill
-```
-
-### 3. Restaurar Dependências
+### 2. Restaurar Dependências
 
 ```bash
 dotnet restore
@@ -235,12 +246,39 @@ dotnet run -f net10.0-windows10.0.19041.0
 
 ---
 
+## Testes
+
+O projeto inclui testes unitários para a camada Core (ViewModels, Entities, Models).
+
+### Executar todos os testes
+
+```bash
+dotnet test ScanMyBilll.Test/ScanMyBilll.Test.csproj
+```
+
+### Executar com saída detalhada
+
+```bash
+dotnet test ScanMyBilll.Test/ScanMyBilll.Test.csproj --logger "console;verbosity=detailed"
+```
+
+### Cobertura de testes
+
+| Módulo | Testes |
+|--------|--------|
+| `HistoryTests` | 11 testes — construtor, propriedades, métodos fluentes, `ToString` |
+| `FileChooseResultTests` | 10 testes — `Empty`, `HasStream`, `Dispose`, `ToString` |
+| `TabScanPageViewModelTests` | 20 testes — seleção de arquivo, detecção QR, histórico, clipboard, navegação |
+| `TabHistoryPageViewModelTests` | 15 testes — filtros, pesquisa, seleção, deleção, clipboard |
+
+---
+
 ## Guia de Uso
 
 ### Escaneando Códigos QR (Aba Escanear)
 
 1. **Abra a Aba Escanear**: Navegue até a aba "Escanear" na navegação inferior
-   
+
 2. **Selecionar Tipo de Arquivo**: Escolha um dos três botões de tipo de arquivo:
    - **PDF**: Escanear códigos QR de documentos PDF
    - **JPG**: Escanear códigos QR de imagens JPEG
@@ -251,7 +289,7 @@ dotnet run -f net10.0-windows10.0.19041.0
    - **iOS/macOS**: Filtragem UTType
    - **Windows**: Filtragem de extensão de arquivo (.pdf, .jpg, .jpeg, .png)
 
-4. **Detecção Automática de QR Code**: 
+4. **Detecção Automática de QR Code**:
    - Para PDFs: Converte automaticamente para imagem(s) e escaneia
    - Para Imagens: Escaneia diretamente códigos QR
    - Exibe valor extraído em diálogo de confirmação
@@ -290,113 +328,116 @@ dotnet run -f net10.0-windows10.0.19041.0
 ## Estrutura do Projeto
 
 ```
-ScanMyBill/
+scan-my-bill/
 │
-├── Views/                              # Páginas XAML de UI
-│   ├── TabScanPage.xaml               # Interface de escaneamento QR
-│   ├── TabScanPage.xaml.cs            # Code-behind
-│   ├── TabHistoryPage.xaml            # Interface de navegação de histórico
-│   └── TabHistoryPage.xaml.cs         # Code-behind
+├── ScanMyBill.Core/                    # Biblioteca testável (net10.0)
+│   ├── Entities/
+│   │   └── History.cs                 # Registro de scan QR
+│   ├── Enums/
+│   │   └── EFileFormat.cs             # Tipos de formato de arquivo
+│   ├── Interfaces/
+│   │   ├── IAlert.cs                  # Contrato de diálogo
+│   │   ├── IAppNavigation.cs          # Contrato de navegação
+│   │   ├── IClipboardService.cs       # Contrato de área de transferência
+│   │   ├── IFileChoose.cs             # Contrato de seletor de arquivo
+│   │   ├── IPdf.cs                    # Contrato de conversão PDF
+│   │   └── IQrCode.cs                 # Contrato de escaneamento QR
+│   ├── Models/
+│   │   └── FileChooseResult.cs        # DTO de resultado do seletor de arquivo
+│   ├── Repositories/
+│   │   └── IHistoryRepository.cs      # Contrato de repositório
+│   ├── ViewModels/
+│   │   ├── TabScanPageViewModel.cs    # Lógica e comandos da aba de scan
+│   │   └── TabHistoryPageViewModel.cs # Lógica e comandos da aba de histórico
+│   └── ScanMyBill.Core.csproj
 │
-├── ViewModels/                         # ViewModels MVVM
-│   ├── TabScanPageViewModel.cs        # Lógica e comandos da aba de scan
-│   └── TabHistoryPageViewModel.cs     # Lógica e comandos da aba de histórico
+├── ScanMyBill/                         # App MAUI (net10.0-*)
+│   ├── Views/
+│   │   ├── TabScanPage.xaml           # Interface de escaneamento QR
+│   │   ├── TabScanPage.xaml.cs
+│   │   ├── TabHistoryPage.xaml        # Interface de navegação de histórico
+│   │   └── TabHistoryPage.xaml.cs
+│   ├── Services/
+│   │   ├── QrCodeService.cs           # Wrapper de escaneamento QR do ZXing
+│   │   ├── PdfToImageService.cs       # Conversão PDF→Bitmap
+│   │   ├── FileChooseService.cs       # Seleção de arquivo específica da plataforma
+│   │   ├── AlertService.cs            # Exibição de diálogos do usuário
+│   │   ├── AppNavigationService.cs    # Navegação de shell baseada em abas
+│   │   └── ClipboardService.cs        # Implementação MAUI de IClipboardService
+│   ├── Repositories/
+│   │   └── HistoryRepository.cs       # Implementação SQLite
+│   ├── Data/
+│   │   └── DatabaseHelper.cs          # Conexão SQLite e tabelas
+│   ├── Converters/
+│   │   └── UtcToLocalConverter.cs     # Formatação DateTime UTC→Local
+│   ├── Resources/
+│   │   ├── Styles/
+│   │   │   ├── Colors.xaml           # Definições de cor
+│   │   │   └── Styles.xaml           # Estilo de controle
+│   │   ├── Images/                    # Ícones e gráficos de UI
+│   │   ├── Fonts/
+│   │   │   └── Inter.ttf             # Tipografia Inter
+│   │   ├── AppIcon/                   # Ícones de app para lojas
+│   │   ├── Splash/                    # Imagem de tela de splash
+│   │   └── Raw/
+│   │       └── AboutAssets.txt       # Documentação de ativos
+│   ├── Platforms/
+│   │   ├── Android/
+│   │   │   ├── AndroidManifest.xml   # Manifesto Android
+│   │   │   ├── MainActivity.cs       # Ponto de entrada Android
+│   │   │   └── MainApplication.cs    # Classe de app Android
+│   │   ├── iOS/
+│   │   │   ├── AppDelegate.cs        # Delegado de app iOS
+│   │   │   └── Program.cs            # Ponto de entrada iOS
+│   │   ├── MacCatalyst/
+│   │   │   ├── AppDelegate.cs
+│   │   │   └── Program.cs
+│   │   └── Windows/
+│   │       ├── App.xaml              # Definição de app Windows
+│   │       └── App.xaml.cs
+│   ├── Properties/
+│   │   └── launchSettings.json        # Configuração de inicialização
+│   ├── MauiProgram.cs                 # Contêiner DI & configuração de app
+│   ├── App.xaml                       # Recursos de nível de app
+│   ├── App.xaml.cs                    # Classe de app
+│   ├── AppShell.xaml                  # Shell (layout de navegação de abas)
+│   ├── AppShell.xaml.cs               # Code-behind do shell
+│   └── ScanMyBill.csproj
 │
-├── Services/                           # Lógica de Negócio & Abstração
-│   ├── QrCodeService.cs               # Wrapper de escaneamento QR do ZXing
-│   ├── PdfToImageService.cs           # Conversão PDF→Bitmap
-│   ├── FileChooseService.cs           # Seleção de arquivo específica da plataforma
-│   ├── AlertService.cs                # Exibição de diálogos do usuário
-│   └── AppNavigationService.cs        # Navegação de shell baseada em abas
+├── ScanMyBilll.Test/                   # Projeto de testes (net10.0)
+│   ├── FileChooseResultTests.cs       # Testes para FileChooseResult
+│   ├── HistoryTests.cs                # Testes para History
+│   ├── TabScanPageViewModelTests.cs   # Testes para TabScanPageViewModel
+│   ├── TabHistoryPageViewModelTests.cs # Testes para TabHistoryPageViewModel
+│   └── ScanMyBilll.Test.csproj
 │
-├── Interfaces/                         # Contratos de Serviço
-│   ├── IQrCode.cs                     # Contrato de escaneamento QR
-│   ├── IPdf.cs                        # Contrato de conversão PDF
-│   ├── IFileChoose.cs                 # Contrato de seletor de arquivo
-│   ├── IAlert.cs                      # Contrato de diálogo
-│   └── IAppNavigation.cs              # Contrato de navegação
-│
-├── Repositories/                       # Camada de Acesso a Dados
-│   ├── IHistoryRepository.cs          # Contrato de repositório
-│   └── HistoryRepository.cs           # Implementação SQLite
-│
-├── Entities/                           # Modelos de Domínio
-│   └── History.cs                     # Registro de scan QR
-│
-├── Enums/                              # Enumerações
-│   └── EFileFormat.cs                 # Tipos de formato de arquivo
-│
-├── Data/                               # Configuração de Banco de Dados
-│   └── DatabaseHelper.cs              # Conexão SQLite e tabelas
-│
-├── Models/                             # Data Transfer Objects
-│   └── FileChooseResult.cs            # DTO de resultado do seletor de arquivo
-│
-├── Converters/                         # Conversores de Valor XAML
-│   └── UtcToLocalConverter.cs         # Formatação DateTime UTC→Local
-│
-├── Resources/                          # Recursos da App
-│   ├── Styles/
-│   │   ├── Colors.xaml               # Definições de cor
-│   │   └── Styles.xaml               # Estilo de controle
-│   ├── Images/                        # Ícones e gráficos de UI
-│   ├── Fonts/
-│   │   └── Inter.ttf                 # Tipografia Inter
-│   ├── AppIcon/                       # Ícones de app para lojas
-│   ├── Splash/                        # Imagem de tela de splash
-│   └── Raw/
-│       └── AboutAssets.txt           # Documentação de ativos
-│
-├── Platforms/                          # Código Específico de Plataforma
-│   ├── Android/
-│   │   ├── AndroidManifest.xml       # Manifesto Android
-│   │   ├── MainActivity.cs            # Ponto de entrada Android
-│   │   ├── MainApplication.cs         # Classe de app Android
-│   │   └── Resources/
-│   │       └── values/
-│   │           └── colors.xml         # Paleta de cores Android
-│   ├── iOS/
-│   │   ├── AppDelegate.cs             # Delegado de app iOS
-│   │   ├── Program.cs                 # Ponto de entrada iOS
-│   │   ├── Info.plist                 # Configuração iOS
-│   │   └── Resources/
-│   ├── MacCatalyst/
-│   │   ├── AppDelegate.cs
-│   │   ├── Program.cs
-│   │   └── Info.plist
-│   └── Windows/
-│       ├── App.xaml                   # Definição de app Windows
-│       ├── App.xaml.cs
-│       ├── app.manifest               # Manifesto de app Windows
-│       └── Package.appxmanifest       # Configuração de pacote Windows
-│
-├── Properties/
-│   └── launchSettings.json            # Configuração de inicialização
-│
-├── MauiProgram.cs                     # Contêiner DI & configuração de app
-├── App.xaml                           # Recursos de nível de app
-├── App.xaml.cs                        # Classe de app
-├── AppShell.xaml                      # Shell (layout de navegação de abas)
-├── AppShell.xaml.cs                   # Code-behind do shell
-├── ScanMyBill.csproj                  # Arquivo de projeto
-└── bin/ & obj/                        # Saída de compilação (gerado)
+└── scan-my-bill.slnx                   # Arquivo de solução
 ```
 
 ### Descrições de Diretórios
 
-| Pasta | Propósito |
-|--------|---------|
-| **Views** | Páginas XAML e seu code-behind; define layout e controles de UI |
-| **ViewModels** | Classes MVVM ViewModel com propriedades observáveis e comandos de retransmissão |
-| **Services** | Camada de lógica de negócio; abstrações para preocupações transversais |
-| **Repositories** | Camada de acesso a dados; abstrai operações de banco de dados |
-| **Entities** | Modelos de domínio representando objetos de negócio principais |
-| **Resources** | Recursos estáticos: cores, estilos, imagens, fontes |
-| **Platforms** | Arquivos de implementação e configuração específicos de plataforma |
+| Pasta | Projeto | Propósito |
+|-------|---------|-----------|
+| **ScanMyBill.Core** | Core | Código testável independente de MAUI: ViewModels, Entities, Models, Enums, Interfaces |
+| **ScanMyBill/Views** | MAUI | Páginas XAML e seu code-behind; define layout e controles de UI |
+| **ScanMyBill/Services** | MAUI | Implementações concretas dos serviços com dependências de plataforma |
+| **ScanMyBill/Repositories** | MAUI | Implementação SQLite do HistoryRepository |
+| **ScanMyBill/Data** | MAUI | Configuração e conexão do banco de dados SQLite |
+| **ScanMyBill/Converters** | MAUI | Conversores de valor para bindings XAML |
+| **ScanMyBill/Resources** | MAUI | Recursos estáticos: cores, estilos, imagens, fontes |
+| **ScanMyBill/Platforms** | MAUI | Arquivos de implementação e configuração específicos de plataforma |
+| **ScanMyBilll.Test** | Test | Testes unitários com xUnit e NSubstitute |
 
 ---
 
 ## Notas Importantes
+
+### Separação Core / MAUI
+
+O código foi organizado em dois projetos para permitir testes unitários sem dependência de MAUI:
+
+- **ScanMyBill.Core** (`net10.0`): Contém toda a lógica de negócio, ViewModels, entidades e interfaces. Pode ser compilado e testado sem o runtime MAUI.
+- **ScanMyBill** (`net10.0-*`): Contém apenas código que depende de APIs MAUI (Views, Services com `Clipboard.Default`, `FilePicker.Default`, etc).
 
 ### Armazenamento de Banco de Dados
 
@@ -438,7 +479,7 @@ Cada plataforma usa APIs de seleção de arquivo nativas com filtragem otimizada
 
 **Problema**: `dotnet build` falha no Android com "Android SDK não encontrado"
 ```
-Solução: 
+Solução:
 1. Instale Android SDK 31+ via Android Studio ou sdkmanager
 2. Defina a variável de ambiente ANDROID_HOME
    - Windows: Set-Item env:ANDROID_HOME "C:\Android\sdk"
@@ -513,6 +554,12 @@ Contribuições são bem-vindas! Por favor, siga estas diretrizes:
 4. Envie para o branch: `git push origin feature/seu-nome-recurso`
 5. Abra um Pull Request
 
+### Executar testes antes de enviar
+
+```bash
+dotnet test ScanMyBilll.Test/ScanMyBilll.Test.csproj
+```
+
 ---
 
 ## Licença
@@ -535,3 +582,5 @@ Para problemas, sugestões ou questões:
 - **PDFtoImage**: Biblioteca de renderização de PDF
 - **.NET MAUI**: Framework multiplataforma
 - **CommunityToolkit.Mvvm**: Suporte ao padrão MVVM
+- **NSubstitute**: Framework de mocking para testes unitários
+- **xUnit**: Framework de testes unitários

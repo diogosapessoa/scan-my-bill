@@ -1,4 +1,4 @@
-﻿using ScanMyBill.Interfaces;
+﻿using ScanMyBill.Core.Interfaces;
 
 using SkiaSharp;
 

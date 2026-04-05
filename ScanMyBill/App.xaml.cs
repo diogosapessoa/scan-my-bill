@@ -17,6 +17,9 @@ public partial class App : Application
 #if WINDOWS // Definir o tamanho da janela para 9:16 ao iniciar no windwos
         window.Width = 360;
         window.Height = 640;
+#elif MACCATALYST
+        window.MinimumWidth = 360;
+        window.MinimumHeight = 640;
 #endif
 
         return window;

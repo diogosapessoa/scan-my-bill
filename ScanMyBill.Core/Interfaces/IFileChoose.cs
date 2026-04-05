@@ -1,7 +1,7 @@
-﻿using ScanMyBill.Enums;
-using ScanMyBill.Models;
+using ScanMyBill.Core.Enums;
+using ScanMyBill.Core.Models;
 
-namespace ScanMyBill.Interfaces;
+namespace ScanMyBill.Core.Interfaces;
 
 public interface IFileChoose
 {

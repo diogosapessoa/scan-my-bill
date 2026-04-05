@@ -1,6 +1,6 @@
-﻿using SkiaSharp;
+using SkiaSharp;
 
-namespace ScanMyBill.Interfaces;
+namespace ScanMyBill.Core.Interfaces;
 
 public interface IQrCode
 {

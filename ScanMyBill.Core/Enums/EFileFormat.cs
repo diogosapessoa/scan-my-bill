@@ -1,4 +1,4 @@
-﻿namespace ScanMyBill.Enums;
+namespace ScanMyBill.Core.Enums;
 
 public enum EFileFormat
 {

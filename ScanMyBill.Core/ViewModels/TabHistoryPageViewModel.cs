@@ -1,14 +1,14 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using ScanMyBill.Entities;
-using ScanMyBill.Enums;
-using ScanMyBill.Interfaces;
-using ScanMyBill.Repositories;
+using ScanMyBill.Core.Entities;
+using ScanMyBill.Core.Enums;
+using ScanMyBill.Core.Interfaces;
+using ScanMyBill.Core.Repositories;
 
 using System.Collections.ObjectModel;
 
-namespace ScanMyBill.ViewModels
+namespace ScanMyBill.Core.ViewModels
 {
     public partial class TabHistoryPageViewModel : ObservableObject
     {
@@ -36,9 +36,9 @@ namespace ScanMyBill.ViewModels
 
         private readonly IHistoryRepository _historyRepository;
         private readonly IAlert _alert;
-        private readonly IClipboard _clipboard;
+        private readonly IClipboardService _clipboard;
 
-        public TabHistoryPageViewModel(IHistoryRepository historyRepository, IAlert alert, IClipboard clipboard)
+        public TabHistoryPageViewModel(IHistoryRepository historyRepository, IAlert alert, IClipboardService clipboard)
         {
             _historyRepository = historyRepository;
             _alert = alert;
@@ -56,13 +56,13 @@ namespace ScanMyBill.ViewModels
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task SearchEnterAsync()
+        public async Task SearchEnterAsync()
         {
             await LodHistoryWithFilters();
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task FilterAllSelectedAsync()
+        public async Task FilterAllSelectedAsync()
         {
             FilterFormat = EFileFormat.Undefined;
             IsFilterAll = true;
@@ -73,7 +73,7 @@ namespace ScanMyBill.ViewModels
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task FilterPdfSelectedAsync()
+        public async Task FilterPdfSelectedAsync()
         {
             FilterFormat = EFileFormat.Pdf;
             IsFilterPdf = true;
@@ -84,7 +84,7 @@ namespace ScanMyBill.ViewModels
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task FilterImageSelectedAsync()
+        public async Task FilterImageSelectedAsync()
         {
             FilterFormat = EFileFormat.Png;
             IsFilterImage = true;
@@ -95,15 +95,14 @@ namespace ScanMyBill.ViewModels
         }
 
         [RelayCommand(AllowConcurrentExecutions = false)]
-        private async Task HistorySelectedItemAsync()
+        public async Task HistorySelectedItemAsync()
         {
             if (SelectedItem == null) return;
 
             var selectedItem = SelectedItem;
 
-            SelectedItem = null;//Remover seleção visual
+            SelectedItem = null;
 
-            //Em teoria não deve acontecer, só deveria ter salvo com campo valor
             if (string.IsNullOrWhiteSpace(selectedItem.Value))
             {
                 if (await _alert.AcceptAsync("Deseja deletar?", selectedItem.Name, "Sim", "Não"))

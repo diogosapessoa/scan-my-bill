@@ -6,10 +6,11 @@ using Microsoft.Maui.Handlers;
 using Plugin.AdMob;
 using Plugin.AdMob.Configuration;
 
-using ScanMyBill.Interfaces;
+using ScanMyBill.Core.Interfaces;
+using ScanMyBill.Core.Repositories;
+using ScanMyBill.Core.ViewModels;
 using ScanMyBill.Repositories;
 using ScanMyBill.Services;
-using ScanMyBill.ViewModels;
 
 namespace ScanMyBill;
 
@@ -44,7 +45,7 @@ public static class MauiProgram
 
     private static void DependencyInjection(IServiceCollection services)
     {
-        services.AddSingleton(Clipboard.Default);
+        services.AddSingleton<IClipboardService, ClipboardService>();
 
         services.AddSingleton<IAlert, AlertService>();
         services.AddSingleton<IFileChoose, FileChooseService>();

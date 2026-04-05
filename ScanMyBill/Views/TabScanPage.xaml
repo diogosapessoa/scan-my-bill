@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:ScanMyBill.ViewModels"
-             xmlns:entities="clr-namespace:ScanMyBill.Entities"
-             xmlns:converters="clr-namespace:ScanMyBill.Converters"
+             xmlns:viewModels="clr-namespace:ScanMyBill.Core.ViewModels;assembly=ScanMyBill.Core"
+             xmlns:entities="clr-namespace:ScanMyBill.Core.Entities;assembly=ScanMyBill.Core"
+              xmlns:converters="clr-namespace:ScanMyBill.Core.Converters;assembly=ScanMyBill.Core"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:admob="clr-namespace:Plugin.AdMob;assembly=Plugin.AdMob"
              x:Class="ScanMyBill.Views.TabScanPage"

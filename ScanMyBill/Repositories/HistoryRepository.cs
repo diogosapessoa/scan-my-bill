@@ -1,6 +1,7 @@
 ﻿using ScanMyBill.Data;
-using ScanMyBill.Entities;
-using ScanMyBill.Enums;
+using ScanMyBill.Core.Entities;
+using ScanMyBill.Core.Enums;
+using ScanMyBill.Core.Repositories;
 
 using SQLite;
 

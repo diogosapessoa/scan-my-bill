@@ -1,4 +1,4 @@
-﻿namespace ScanMyBill.Interfaces;
+namespace ScanMyBill.Core.Interfaces;
 
 public interface IAlert
 {

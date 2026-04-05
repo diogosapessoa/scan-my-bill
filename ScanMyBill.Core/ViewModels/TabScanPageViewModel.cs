@@ -1,20 +1,20 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using ScanMyBill.Entities;
-using ScanMyBill.Enums;
-using ScanMyBill.Interfaces;
-using ScanMyBill.Repositories;
+using ScanMyBill.Core.Entities;
+using ScanMyBill.Core.Enums;
+using ScanMyBill.Core.Interfaces;
+using ScanMyBill.Core.Repositories;
 
 using SkiaSharp;
 
 using System.Collections.ObjectModel;
 
-namespace ScanMyBill.ViewModels;
+namespace ScanMyBill.Core.ViewModels;
 
 public partial class TabScanPageViewModel : ObservableObject
 {
-    public const int MaxHistoryItems = 5;// Valor arbitrário para limitar a quantidade de itens recentes
+    public const int MaxHistoryItems = 5;
 
     [ObservableProperty]
     private History? selectedItem;
@@ -25,12 +25,12 @@ public partial class TabScanPageViewModel : ObservableObject
     private readonly IPdf _pdf;
     private readonly IQrCode _qrCode;
     private readonly IAlert _alert;
-    private readonly IClipboard _clipboard;
+    private readonly IClipboardService _clipboard;
     private readonly IHistoryRepository _historyRepository;
     private readonly IAppNavigation _navigation;
 
     public TabScanPageViewModel(IFileChoose fileChoose, IPdf pdf, IQrCode qrCode,
-        IAlert alert, IClipboard clipboard, IHistoryRepository historyRepository, IAppNavigation navigation)
+        IAlert alert, IClipboardService clipboard, IHistoryRepository historyRepository, IAppNavigation navigation)
     {
         _fileChoose = fileChoose;
         _pdf = pdf;
@@ -42,7 +42,7 @@ public partial class TabScanPageViewModel : ObservableObject
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task SelectPdfAsync(CancellationToken cancellationToken = default)
+    public async Task SelectPdfAsync(CancellationToken cancellationToken = default)
     {
         using var pdfResult = await _fileChoose.GetPdfAsync(cancellationToken);
         if (pdfResult == null || pdfResult.Stream == null || pdfResult.Stream == Stream.Null) return;
@@ -60,7 +60,7 @@ public partial class TabScanPageViewModel : ObservableObject
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task SelectJpgAsync(CancellationToken cancellationToken = default)
+    public async Task SelectJpgAsync(CancellationToken cancellationToken = default)
     {
         using var jpgResult = await _fileChoose.GetImageAsync(EFileFormat.Jpg, cancellationToken);
         if (jpgResult == null || !jpgResult.HasStream) return;
@@ -78,7 +78,7 @@ public partial class TabScanPageViewModel : ObservableObject
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task SelectPngAsync(CancellationToken cancellationToken = default)
+    public async Task SelectPngAsync(CancellationToken cancellationToken = default)
     {
         using var pngResult = await _fileChoose.GetImageAsync(EFileFormat.Png, cancellationToken);
         if (pngResult == null || !pngResult.HasStream) return;
@@ -96,11 +96,11 @@ public partial class TabScanPageViewModel : ObservableObject
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task RecentSelectedItemAsync()
+    public async Task RecentSelectedItemAsync()
     {
         var selectedItem = SelectedItem;
 
-        SelectedItem = null;//Remover seleção visual
+        SelectedItem = null;
 
         if (string.IsNullOrWhiteSpace(selectedItem?.Value)) return;
 
@@ -111,7 +111,7 @@ public partial class TabScanPageViewModel : ObservableObject
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-    private async Task GoToHistoryTabAsync()
+    public async Task GoToHistoryTabAsync()
     {
         await _navigation.GoToHistoryTabAsync();
     }

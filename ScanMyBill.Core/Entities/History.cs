@@ -1,9 +1,9 @@
-﻿using ScanMyBill.Enums;
-using ScanMyBill.Models;
+using ScanMyBill.Core.Enums;
+using ScanMyBill.Core.Models;
 
 using SQLite;
 
-namespace ScanMyBill.Entities;
+namespace ScanMyBill.Core.Entities;
 
 public sealed class History
 {

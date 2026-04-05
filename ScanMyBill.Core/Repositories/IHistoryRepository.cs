@@ -1,7 +1,7 @@
-﻿using ScanMyBill.Entities;
-using ScanMyBill.Enums;
+using ScanMyBill.Core.Entities;
+using ScanMyBill.Core.Enums;
 
-namespace ScanMyBill.Repositories;
+namespace ScanMyBill.Core.Repositories;
 
 public interface IHistoryRepository
 {

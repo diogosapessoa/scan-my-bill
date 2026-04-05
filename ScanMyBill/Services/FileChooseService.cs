@@ -1,6 +1,6 @@
-﻿using ScanMyBill.Enums;
-using ScanMyBill.Interfaces;
-using ScanMyBill.Models;
+﻿using ScanMyBill.Core.Enums;
+using ScanMyBill.Core.Interfaces;
+using ScanMyBill.Core.Models;
 
 namespace ScanMyBill.Services;
 
