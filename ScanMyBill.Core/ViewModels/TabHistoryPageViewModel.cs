@@ -45,6 +45,12 @@ namespace ScanMyBill.Core.ViewModels
             _clipboard = clipboard;
         }
 
+        [RelayCommand]
+        public async Task OnApeearingAsync()
+        {
+            await LodHistoryWithFilters();
+        }
+
         public async Task LodHistoryWithFilters()
         {
             var recents = await _historyRepository.GetAllByFilters(FilterFormat, InputSearch);

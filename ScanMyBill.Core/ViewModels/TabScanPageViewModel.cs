@@ -41,6 +41,12 @@ public partial class TabScanPageViewModel : ObservableObject
         _navigation = navigation;
     }
 
+    [RelayCommand]
+    public async Task OnAppearingAsync()
+    {
+        await LoadRecentsAsync();
+    }
+
     [RelayCommand(AllowConcurrentExecutions = false)]
     public async Task SelectPdfAsync(CancellationToken cancellationToken = default)
     {

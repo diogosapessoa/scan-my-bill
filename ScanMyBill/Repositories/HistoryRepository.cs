@@ -3,8 +3,6 @@ using ScanMyBill.Core.Entities;
 using ScanMyBill.Core.Enums;
 using ScanMyBill.Core.Repositories;
 
-using SQLite;
-
 using System.Linq.Expressions;
 
 namespace ScanMyBill.Repositories;
@@ -13,24 +11,34 @@ public sealed class HistoryRepository : IHistoryRepository
 {
     public const int MaxHistoryItems = 100; // Limite fixado para evitar sobrecarga de memória, pode ser ajustado conforme necessário
 
-    private readonly SQLiteAsyncConnection _connection;
+    private readonly IDatabaseHelper _database;
 
-    public HistoryRepository()
+    public HistoryRepository(IDatabaseHelper databaseHelper)
     {
-        _connection = DatabaseHelper.Connection;
+        _database = databaseHelper;
     }
 
     public async Task<List<History>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        await _connection.CreateTableAsync<History>();
+        await _database.Connection.CreateTableAsync<History>();
 
-        return await _connection.Table<History>().Take(MaxHistoryItems).ToListAsync();
+        return await _database.Connection.Table<History>().Take(MaxHistoryItems).ToListAsync();
     }
 
     public async Task<List<History>> GetAllByFilters(EFileFormat format, string? name, CancellationToken cancellationToken = default)
     {
-        await _connection.CreateTableAsync<History>();
+        await _database.Connection.CreateTableAsync<History>();
+        Expression<Func<History, bool>> filter = GenerateSearchFilter(format, name);
 
+        return await _database.Connection.Table<History>()
+            .OrderByDescending(x => x.Id)
+            .Take(MaxHistoryItems)
+            .Where(filter)
+            .ToListAsync();
+    }
+
+    private static Expression<Func<History, bool>> GenerateSearchFilter(EFileFormat format, string? name)
+    {
         Expression<Func<History, bool>> filter;
 
         if (format == EFileFormat.Undefined && !string.IsNullOrWhiteSpace(name))
@@ -54,18 +62,14 @@ public sealed class HistoryRepository : IHistoryRepository
         else
             filter = h => true; // Sem filtros, retorna tudo
 
-        return await _connection.Table<History>()
-            .OrderByDescending(x => x.Id)
-            .Take(MaxHistoryItems)
-            .Where(filter)
-            .ToListAsync();
+        return filter;
     }
 
     public async Task<List<History>> GetRecents(int limit, CancellationToken cancellationToken = default)
     {
-        await _connection.CreateTableAsync<History>();
+        await _database.Connection.CreateTableAsync<History>();
 
-        return await _connection.Table<History>()
+        return await _database.Connection.Table<History>()
             .OrderByDescending(x => x.Id)
             .Take(limit)
             .ToListAsync();
@@ -73,16 +77,16 @@ public sealed class HistoryRepository : IHistoryRepository
 
     public async Task<History?> FindByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _connection.FindAsync<History>(id);
+        return await _database.Connection.FindAsync<History>(id);
     }
 
     public async Task SaveAsync(History history, CancellationToken cancellationToken = default)
     {
-        await _connection.InsertAsync(history);
+        await _database.Connection.InsertAsync(history);
     }
 
     public async Task DeleteByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        await _connection.DeleteAsync<History>(id);
+        await _database.Connection.DeleteAsync<History>(id);
     }
 }

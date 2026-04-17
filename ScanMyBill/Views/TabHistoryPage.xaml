@@ -6,12 +6,18 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:converters="clr-namespace:ScanMyBill.Core.Converters;assembly=ScanMyBill.Core"
              x:Class="ScanMyBill.Views.TabHistoryPage"
+             x:Name="TabHistoryPageRef"
              x:DataType="viewModels:TabHistoryPageViewModel">
     <ContentPage.Resources>
         <converters:UtcToLocalConverter x:Key="UtcToLocalConverter" />
         <toolkit:BoolToObjectConverter x:Key="BoolFilterBackgroundToColor" x:TypeArguments="Color" TrueObject="{StaticResource SecondaryBlue}" FalseObject="#E2E8F0" />
         <toolkit:BoolToObjectConverter x:Key="BoolFilterTextToColor" x:TypeArguments="Color" TrueObject="#FFFFFF" FalseObject="#475569" />
     </ContentPage.Resources>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Appearing"
+                                        Command="{Binding BindingContext.ApeearingCommand, Source={x:Reference TabHistoryPageRef}}" />
+    </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
 

@@ -9,8 +9,10 @@ using Plugin.AdMob.Configuration;
 using ScanMyBill.Core.Interfaces;
 using ScanMyBill.Core.Repositories;
 using ScanMyBill.Core.ViewModels;
+using ScanMyBill.Data;
 using ScanMyBill.Repositories;
 using ScanMyBill.Services;
+using ScanMyBill.Views;
 
 namespace ScanMyBill;
 
@@ -45,6 +47,7 @@ public static class MauiProgram
 
     private static void DependencyInjection(IServiceCollection services)
     {
+        services.AddSingleton<IDatabaseHelper, DatabaseHelper>();
         services.AddSingleton<IClipboardService, ClipboardService>();
 
         services.AddSingleton<IAlert, AlertService>();
@@ -55,7 +58,10 @@ public static class MauiProgram
 
         services.AddSingleton<IHistoryRepository, HistoryRepository>();
 
+        services.AddTransient<TabScanPage>();
         services.AddTransient<TabScanPageViewModel>();
+
+        services.AddTransient<TabHistoryPage>();
         services.AddTransient<TabHistoryPageViewModel>();
     }
 

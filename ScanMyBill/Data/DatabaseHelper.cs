@@ -2,27 +2,17 @@
 
 namespace ScanMyBill.Data;
 
-public sealed class DatabaseHelper
+public sealed class DatabaseHelper : IDatabaseHelper
 {
     public const string DatabaseName = "DATABASE.db";
 
-    private static SQLiteAsyncConnection? _connection;
+    public SQLiteAsyncConnection Connection { get; private set; }
 
-    public static SQLiteAsyncConnection Connection
+    public DatabaseHelper()
     {
-        get
-        {
-            if (_connection == null)
-            {
-                var directory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                var databasePath = Path.Combine(directory, DatabaseName);
+        var directory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var databasePath = Path.Combine(directory, DatabaseName);
 
-                _connection = new SQLiteAsyncConnection(databasePath);
-            }
-
-            return _connection;
-        }
+        Connection = new SQLiteAsyncConnection(databasePath);
     }
-
-    private DatabaseHelper() { }
 }
