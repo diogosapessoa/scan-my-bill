@@ -1,6 +1,7 @@
 name: Generate Android Artifacts
 
 on:
+  workflow_dispatch: # Permite a execução manual
   push:
     tags:
       - 'v*'
