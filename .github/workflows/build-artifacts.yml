@@ -18,8 +18,14 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Restore Solution
+        run: dotnet restore scan-my-bill.slnx
+
       - name: Install MAUI Workload
         run: dotnet workload install maui-android
+
+      - name: Run Unit Tests
+        run: dotnet test scan-my-bill.slnx --no-build -c Release --verbosity normal
 
       - name: Decode Keystore
         run: |
