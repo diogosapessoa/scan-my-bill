@@ -8,6 +8,8 @@
 
 ## Visão Geral
 
+[<img src="https://play.google.com/intl/pt-BR/badges/static/images/badges/pt-br_badge_web_generic.png" alt="Disponível no Google Play" height="60">](https://play.google.com/store/apps/details?id=com.diogosapessoa.scanmybill)
+
 **ScanMyBill** é uma aplicação móvel e desktop multiplataforma que permite aos usuários escanear e extrair códigos QR de documentos PDF e arquivos de imagem (JPG, PNG). A aplicação oferece uma experiência perfeita para gerenciar documentos digitais, detectando automaticamente códigos QR, extraindo seus dados e mantendo um histórico pesquisável e persistente de todos os escaneamentos com recursos avançados de filtragem.
 
 Projetado com arquitetura MVVM moderna e construído no framework .NET MAUI, o ScanMyBill oferece uma experiência nativa em múltiplas plataformas, incluindo Android, iOS, macOS Catalyst e Windows 10/11. A interface intuitiva apresenta UI em português brasileiro com dois fluxos de trabalho principais: escaneamento rápido na aba principal e gerenciamento abrangente do histórico na aba de histórico.
